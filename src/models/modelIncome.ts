@@ -1,7 +1,8 @@
-import mongoosePaginate from 'mongoose-paginate-v2';
-import { plugin, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
+import { plugin, getModelForClass, modelOptions, prop, index } from '@typegoose/typegoose';
+import paginationPlugin, { PaginateModel } from 'typegoose-cursor-pagination';
 
-@plugin(mongoosePaginate)
+@plugin(paginationPlugin)
+@index({ dateEnter: 1 })
 @modelOptions({
 	schemaOptions: {
 		timestamps: true,
@@ -76,6 +77,6 @@ class Income {
 	comments?: String;
 }
 
-const incomeModel = getModelForClass(Income);
+const incomeModel = getModelForClass(Income) as PaginateModel<Income, typeof Income>;
 
 export { incomeModel };
