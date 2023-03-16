@@ -19,10 +19,17 @@ export class IncomeController {
 		//find by onlyEnd
 		if (req.query.onlyEnd) {
 			const onlyEnd = req.query.onlyEnd;
-
 			if (onlyEnd === 'true') {
-				const incomes = await incomeModel.find({ exit: true }, options);
-				return res.status(200).json(incomes);
+				try {
+					const incomes = await incomeModel.findPaged(options, {
+						exit: 'false',
+					});
+					if (incomes.docs.length === 0) throw Error('Someting went wrong with finde by onlyEnd  ');
+					return res.status(200).json(incomes);
+				} catch (error) {
+					let result = (error as DOMException).message;
+					return res.status(404).json({ message: result });
+				}
 			} else {
 				return res.status(400).json({ message: 'the onlyEnd must be true' });
 			}
@@ -31,10 +38,19 @@ export class IncomeController {
 		//find by onlyEnter
 		if (req.query.onlyEnter) {
 			const onlyEnter = req.query.onlyEnter;
+			const site = req.query.site;
 
 			if (onlyEnter === 'true') {
-				const incomes = await incomeModel.find({ exit: 'false' }, options);
-				return res.status(200).json(incomes);
+				try {
+					const incomes = await incomeModel.findPaged(options, {
+						exit: 'false',
+					});
+					if (incomes.docs.length === 0) throw Error('Someting went wrong with onlyEnter');
+					return res.status(200).json(incomes);
+				} catch (error) {
+					let result = (error as DOMException).message;
+					return res.status(404).json({ message: result });
+				}
 			} else {
 				return res.status(400).json({ message: 'the onlyEnter must be true' });
 			}
@@ -42,36 +58,45 @@ export class IncomeController {
 
 		//find by date
 		if (req.query.startDate && req.query.endDate) {
-			const startDate = req.query.startDate.toString();
-			const endDate = req.query.endDate.toString();
+			try {
+				const startDate = req.query.startDate.toString();
+				const endDate = req.query.endDate.toString();
 
-			const neWstartDate = new Date(startDate);
-			const neWendDate = new Date(endDate);
+				const neWstartDate = new Date(startDate);
+				const neWendDate = new Date(endDate);
 
-			const isoStartDate = neWstartDate.toISOString();
-			const isoEndDate = neWendDate.toISOString();
+				const isoStartDate = neWstartDate.toISOString();
+				const isoEndDate = neWendDate.toISOString();
 
-			console.log(isoStartDate);
-			console.log(isoEndDate);
+				console.log(isoStartDate);
+				console.log(isoEndDate);
 
-			const incomes = await incomeModel.find(
-				{
+				const incomes = await incomeModel.findPaged(options, {
 					$and: [{ dateEnter: { $gte: isoStartDate } }, { dateEnter: { $lte: isoEndDate } }],
-				},
-				options
-			);
+				});
+				if (incomes.docs.length === 0) throw Error('Someting went wrong with find by date');
 
-			return res.status(200).json(incomes);
+				return res.status(200).json(incomes);
+			} catch (error) {
+				console.log(error);
+				let result = (error as DOMException).message;
+				return res.status(404).json({ message: result });
+			}
 		}
 
 		//find by site
 		if (req.query.site) {
-			const incomes = await incomeModel.find({ site: req.query.site }, options);
-			return res.status(200).json(incomes);
+			try {
+				const incomes = await incomeModel.findPaged(options, { rda: req.query.site });
+				if (incomes.docs.length === 0) throw Error('The SITE does not exist');
+				return res.status(200).json(incomes);
+			} catch (error) {
+				let result = (error as DOMException).message;
+				return res.status(404).json({ message: result });
+			}
 		}
 
 		//find by RDA
-
 		if (req.query.rda) {
 			try {
 				const incomes = await incomeModel.findPaged(options, { rda: req.query.rda });
@@ -86,6 +111,7 @@ export class IncomeController {
 		// normal find
 		try {
 			const incomes = await incomeModel.findPaged(options, query);
+			if (incomes.docs.length === 0) throw Error('There are no docs');
 			return res.status(200).json(incomes);
 		} catch (error) {
 			let result = (error as DOMException).message;
@@ -93,56 +119,61 @@ export class IncomeController {
 		}
 	};
 
-	// static createIncome = async (req, res) => {
-	// 	try {
-	// 		const { name, site, whatdo, rda, exit, nameEnter, nameExit, dateEnter, comments } = req.body;
+	static createIncome = async (req: Request, res: Response) => {
+		try {
+			const { name, site, whatdo, rda, exit, nameEnter, nameExit, dateEnter, comments } = req.body;
 
-	// 		if (rda.length != 7) {
-	// 			return res.status(400).json({ message: 'RDA invalida, tiene que ser de 7 numeros' });
-	// 		}
+			if (rda.length != 7) {
+				return res.status(400).json({ message: 'RDA invalida, tiene que ser de 7 numeros' });
+			}
 
-	// 		const newIncome = new Income({
-	// 			name,
-	// 			site,
-	// 			whatdo,
-	// 			rda,
-	// 			exit,
-	// 			nameEnter,
-	// 			nameExit,
-	// 			dateEnter,
-	// 			comments,
-	// 		});
-	// 		await newincomeModel.save();
-	// 		return res.status(201).json({ status: 'Income saved' });
-	// 	} catch (error) {
-	// 		return res.status(400).json({ message: error.message });
-	// 	}
-	// };
+			const newIncome = new incomeModel({
+				name,
+				site,
+				whatdo,
+				rda,
+				exit,
+				nameEnter,
+				nameExit,
+				dateEnter,
+				comments,
+			});
+			await newIncome.save();
+			return res.status(201).json({ status: 'Income saved' });
+		} catch (error) {
+			let result = (error as DOMException).message;
+			return res.status(404).json({ message: result });
+		}
+	};
 
-	// static getIncome = async (req, res) => {
-	// 	try {
-	// 		const CardIncome = await incomeModel.findById(req.params.id);
-	// 		res.status(200).json(CardIncome);
-	// 	} catch (error) {
-	// 		res.status(404).json({ message: error.message });
-	// 	}
-	// };
+	static getIncome = async (req: Request, res: Response) => {
+		try {
+			const incomes = await incomeModel.findById(req.params.id);
+			if (!incomes) throw Error('There are no docs');
+			res.status(200).json(incomes);
+		} catch (error) {
+			let result = (error as DOMException).message;
+			return res.status(404).json({ message: result });
+		}
+	};
 
-	// static deleteIncome = async (req, res) => {
-	// 	try {
-	// 		await incomeModel.findByIdAndDelete(req.params.id);
-	// 		res.status(200).json({ status: 'Income deleted' });
-	// 	} catch (error) {
-	// 		res.status(404).json({ message: error });
-	// 	}
-	// };
+	static deleteIncome = async (req: Request, res: Response) => {
+		try {
+			await incomeModel.findByIdAndDelete(req.params.id);
+			res.status(200).json({ status: 'Income deleted' });
+		} catch (error) {
+			let result = (error as DOMException).message;
+			return res.status(404).json({ message: result });
+		}
+	};
 
-	// static updateIncome = async (req, res) => {
-	// 	try {
-	// 		await incomeModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
-	// 		res.status(201).json({ status: 'Income updated' });
-	// 	} catch (error) {
-	// 		res.status(404).json({ message: error.message });
-	// 	}
-	// };
+	static updateIncome = async (req: Request, res: Response) => {
+		try {
+			await incomeModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+			res.status(201).json({ status: 'Income updated' });
+		} catch (error) {
+			let result = (error as DOMException).message;
+			return res.status(404).json({ message: result });
+		}
+	};
 }

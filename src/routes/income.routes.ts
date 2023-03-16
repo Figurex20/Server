@@ -6,10 +6,10 @@ const routerIncomes = Router();
 
 import { IncomeController } from '../controllers/income.controllers';
 
-routerIncomes.route('/').get(IncomeController.getIncomes);
+routerIncomes.route('/').get(IncomeController.getIncomes).post(IncomeController.createIncome);
 // .post([Token.verifyToken, Token.isModerator], IncomeController.createIncome);
 
-routerIncomes.route('/:id');
+routerIncomes.route('/:id').get(IncomeController.getIncome);
 // .get([Token.verifyToken, Token.isModerator], IncomeController.getIncome)
 // .delete([Token.verifyToken, Token.isAdmin], IncomeController.deleteIncome)
 // .put([Token.verifyToken, Token.isModerator], IncomeController.updateIncome);

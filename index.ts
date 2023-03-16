@@ -9,15 +9,15 @@ app.listen(4000);
 
 const newIncome = async () => {
 	const income = new incomeModel({
-		name: 'hola',
-		site: 'hola',
+		name: 'ALOSNO',
+		site: 'MTR400',
 		whatdo: 'hola',
-		rda: '1234567',
+		rda: '7654321',
 		exit: false,
-		nameEnter: 'hola',
+		nameEnter: 'CCR',
 		// nameExit: 'hola',
 		// dateExit: 'hola',
-		dateEnter: 'hola',
+		dateEnter: '2023-03-14T21:14:54.117Z',
 		// comments: 'hola',
 	});
 
@@ -27,8 +27,6 @@ const newIncome = async () => {
 
 const start = async () => {
 	await connectDB();
-
-	// await newIncome();
 
 	console.log(`Server on port ${4000}`);
 };
