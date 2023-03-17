@@ -1,4 +1,4 @@
-export default {
-	SECRET: 'products-api',
+export const secretWotds = {
+	LOGIN: 'user-login-api',
 	RECOVERPASSWORD: 'forget',
 };

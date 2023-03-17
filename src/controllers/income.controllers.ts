@@ -12,10 +12,6 @@ export class IncomeController {
 			previous: '',
 		};
 
-		const query = {}; // Your specific query
-		const projection = {}; // Your desired projection
-		const populate = []; // Your needed population
-
 		//find by onlyEnd
 		if (req.query.onlyEnd) {
 			const onlyEnd = req.query.onlyEnd;
@@ -110,7 +106,7 @@ export class IncomeController {
 
 		// normal find
 		try {
-			const incomes = await incomeModel.findPaged(options, query);
+			const incomes = await incomeModel.findPaged(options, {});
 			if (incomes.docs.length === 0) throw Error('There are no docs');
 			return res.status(200).json(incomes);
 		} catch (error) {
