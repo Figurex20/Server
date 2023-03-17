@@ -25,6 +25,7 @@
 		"typegoose-cursor-pagination": "^2.0.3"
 	},
 	"devDependencies": {
+		"@types/bcryptjs": "^2.4.2",
 		"@types/cors": "^2.8.13",
 		"@types/express": "^4.17.17",
 		"@types/jsonwebtoken": "^9.0.1",

@@ -20,59 +20,66 @@ export class AuthController {
 			return res.status(400).json({ message: 'User duplicated' });
 		}
 
-		const newUser = new urerModel({
-			userName,
-			email,
-			role,
-			name,
-			lastname,
-			// password: await urerModel.encryptPassword(password),
-		});
+		try {
+			const newUser = new urerModel({
+				userName,
+				email,
+				role,
+				name,
+				lastname,
+				password: await urerModel.encryptPassword(password),
+			});
 
-		if (role === 'admin') {
-			try {
+			if (role === 'admin') {
 				const roles = ['admin', 'moderator'];
 				const foundRoles = await roleModel.find({ name: { $in: roles } });
 				if (!foundRoles) throw Error('Something went wrong with role admin and role moderator');
 				newUser.roles = foundRoles.map((role) => role._id);
-			} catch (error) {
-				let result = (error as DOMException).message;
-				return res.status(404).json({ message: result });
 			}
-		}
 
-		if (role === 'moderator') {
-			try {
+			if (role === 'moderator') {
 				const roles = ['moderator'];
 				const foundRoles = await roleModel.find({ name: { $in: roles } });
 				if (!foundRoles) throw Error('Something went wrong with role moderator');
 				newUser.roles = foundRoles.map((role) => role._id);
-			} catch (error) {
-				let result = (error as DOMException).message;
-				return res.status(404).json({ message: result });
 			}
-		}
 
-		if (role === 'user') {
-			try {
+			if (role === 'user') {
 				const roles = ['user'];
 				const foundRoles = await roleModel.find({ name: { $in: roles } });
 				if (!foundRoles) throw Error('Something went wrong with role user');
 				newUser.roles = foundRoles.map((role) => role._id);
-			} catch (error) {
-				let result = (error as DOMException).message;
-				return res.status(404).json({ message: result });
 			}
+
+			const saveUser = await newUser.save();
+
+			return res.status(200).json({ message: 'Succes to create User', newUser: saveUser });
+		} catch (error) {
+			let result = (error as DOMException).message;
+			return res.status(404).json({ message: result });
 		}
+	};
 
-		const saveUser = await newUser.save();
+	static signNin = async (req: Request, res: Response) => {
+		const userFound = await urerModel.findOne({ userName: req.body.user }).populate('roles');
 
-		const token = jwt.sign({ test: 'test' }, secretWotds.LOGIN, {
+		if (!userFound) return res.status(404).json({ message: 'User no found' });
+
+		const matchPassword = await urerModel.comparePassword(req.body.password, userFound.password);
+
+		if (!matchPassword) return res.status(401).json({ token: null, message: 'Invalid Password' });
+
+		const token = jwt.sign({ id: userFound }, secretWotds.LOGIN, {
 			expiresIn: 84600, // 24h
 		});
 
-		res.status(200).json({ token });
-
-		return res.status(200).json({ message: token });
+		res.json({
+			token,
+			user: userFound,
+			// role: userFound.role,
+			// user: userFound.userName,
+			// id: userFound._id,
+			// resetPassword: userFound.resetPassword,
+		});
 	};
 }

@@ -1,5 +1,6 @@
 import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose';
 import { Role } from './modelRole';
+import bcrypt from 'bcryptjs';
 
 @modelOptions({
 	schemaOptions: {
@@ -34,6 +35,15 @@ class User {
 
 	@prop({ ref: () => Role })
 	roles: Ref<Role>[];
+
+	static async encryptPassword(password: string) {
+		const salt = await bcrypt.genSalt(10);
+		return bcrypt.hash(password, salt);
+	}
+
+	static async comparePassword(password: any, recivePassword: any) {
+		return await bcrypt.compare(password, recivePassword);
+	}
 }
 
 const urerModel = getModelForClass(User);
