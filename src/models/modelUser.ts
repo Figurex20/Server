@@ -41,7 +41,7 @@ class User {
 		return bcrypt.hash(password, salt);
 	}
 
-	static async comparePassword(password: any, recivePassword: any) {
+	static async comparePassword(password: string, recivePassword: string) {
 		return await bcrypt.compare(password, recivePassword);
 	}
 }

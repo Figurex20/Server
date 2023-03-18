@@ -65,7 +65,9 @@ export class AuthController {
 
 		if (!userFound) return res.status(404).json({ message: 'User no found' });
 
-		const matchPassword = await urerModel.comparePassword(req.body.password, userFound.password);
+		const userPassword = String(userFound.password);
+
+		const matchPassword = await urerModel.comparePassword(req.body.password, userPassword);
 
 		if (!matchPassword) return res.status(401).json({ token: null, message: 'Invalid Password' });
 
