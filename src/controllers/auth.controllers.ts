@@ -1,6 +1,6 @@
-import { urerModel } from '../models/modelUser';
 import jwt from 'jsonwebtoken';
 import { secretWotds } from '../config';
+import { userModel } from '../models/modelUser';
 import { roleModel } from '../models/modelRole';
 import { Response, Request } from 'express';
 
@@ -14,20 +14,20 @@ export class AuthController {
 			return res.status(400).json({ message: 'the passwords are not the same' });
 		}
 
-		const UserAlreadyExists = urerModel.findOne({ userName });
+		const UserAlreadyExists = userModel.findOne({ userName });
 
 		if (!UserAlreadyExists) {
 			return res.status(400).json({ message: 'User duplicated' });
 		}
 
 		try {
-			const newUser = new urerModel({
+			const newUser = new userModel({
 				userName,
 				email,
 				role,
 				name,
 				lastname,
-				password: await urerModel.encryptPassword(password),
+				password: await userModel.encryptPassword(password),
 			});
 
 			if (role === 'admin') {
@@ -61,13 +61,13 @@ export class AuthController {
 	};
 
 	static signNin = async (req: Request, res: Response) => {
-		const userFound = await urerModel.findOne({ userName: req.body.user }).populate('roles');
+		const userFound = await userModel.findOne({ userName: req.body.user }).populate('roles');
 
 		if (!userFound) return res.status(404).json({ message: 'User no found' });
 
 		const userPassword = String(userFound.password);
 
-		const matchPassword = await urerModel.comparePassword(req.body.password, userPassword);
+		const matchPassword = await userModel.comparePassword(req.body.password, userPassword);
 
 		if (!matchPassword) return res.status(401).json({ token: null, message: 'Invalid Password' });
 

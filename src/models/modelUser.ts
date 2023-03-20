@@ -46,6 +46,6 @@ class User {
 	}
 }
 
-const urerModel = getModelForClass(User);
+const userModel = getModelForClass(User);
 
-export { urerModel };
+export { userModel };
