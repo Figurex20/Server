@@ -6,54 +6,58 @@ import { Response, Request } from 'express';
 
 export class AuthController {
 	static signUp = async (req: Request, res: Response) => {
-		const { userName, email, password, role, name, lastname, confirmPassword } = req.body;
+		// const { userName, email, password, role, name, lastname, confirmPassword } = req.body;
 
-		const equalPassword = password === confirmPassword;
+		// const equalPassword = password === confirmPassword;
 
-		if (!equalPassword) {
-			return res.status(400).json({ message: 'the passwords are not the same' });
-		}
+		// if (!equalPassword) {
+		// 	return res.status(400).json({ message: 'the passwords are not the same' });
+		// }
 
-		const UserAlreadyExists = userModel.findOne({ userName });
+		// const UserAlreadyExists = userModel.findOne({ userName });
 
-		if (!UserAlreadyExists) {
-			return res.status(400).json({ message: 'User duplicated' });
-		}
+		// if (!UserAlreadyExists) {
+		// 	return res.status(400).json({ message: 'User duplicated' });
+		// }
 
 		try {
-			const newUser = new userModel({
-				userName,
-				email,
-				role,
-				name,
-				lastname,
-				password: await userModel.encryptPassword(password),
+			// 	const newUser = new userModel({
+			// 		userName,
+			// 		email,
+			// 		role,
+			// 		name,
+			// 		lastname,
+			// 		password: await userModel.encryptPassword(password),
+			// 	});
+
+			// 	if (role === 'admin') {
+			// 		const roles = ['admin', 'moderator'];
+			// 		const foundRoles = await roleModel.find({ name: { $in: roles } });
+			// 		if (!foundRoles) throw Error('Something went wrong with role admin and role moderator');
+			// 		newUser.roles = foundRoles.map((role) => role._id);
+			// 	}
+
+			// 	if (role === 'moderator') {
+			// 		const roles = ['moderator'];
+			// 		const foundRoles = await roleModel.find({ name: { $in: roles } });
+			// 		if (!foundRoles) throw Error('Something went wrong with role moderator');
+			// 		newUser.roles = foundRoles.map((role) => role._id);
+			// 	}
+
+			// 	if (role === 'user') {
+			// 		const roles = ['user'];
+			// 		const foundRoles = await roleModel.find({ name: { $in: roles } });
+			// 		if (!foundRoles) throw Error('Something went wrong with role user');
+			// 		newUser.roles = foundRoles.map((role) => role._id);
+			// 	}
+
+			// 	const saveUser = await newUser.save();
+			const token = jwt.sign({ id: 'pepe' }, secretWotds.LOGIN, {
+				expiresIn: 84600, // 24h
 			});
 
-			if (role === 'admin') {
-				const roles = ['admin', 'moderator'];
-				const foundRoles = await roleModel.find({ name: { $in: roles } });
-				if (!foundRoles) throw Error('Something went wrong with role admin and role moderator');
-				newUser.roles = foundRoles.map((role) => role._id);
-			}
-
-			if (role === 'moderator') {
-				const roles = ['moderator'];
-				const foundRoles = await roleModel.find({ name: { $in: roles } });
-				if (!foundRoles) throw Error('Something went wrong with role moderator');
-				newUser.roles = foundRoles.map((role) => role._id);
-			}
-
-			if (role === 'user') {
-				const roles = ['user'];
-				const foundRoles = await roleModel.find({ name: { $in: roles } });
-				if (!foundRoles) throw Error('Something went wrong with role user');
-				newUser.roles = foundRoles.map((role) => role._id);
-			}
-
-			const saveUser = await newUser.save();
-
-			return res.status(200).json({ message: 'Succes to create User', newUser: saveUser });
+			return res.status(200).json({ message: 'Succes to create User', newUser: token });
+			// return res.status(200).json({ message: 'Succes to create User', newUser: saveUser });
 		} catch (error) {
 			let result = (error as DOMException).message;
 			return res.status(404).json({ message: result });
@@ -71,7 +75,7 @@ export class AuthController {
 
 		if (!matchPassword) return res.status(401).json({ token: null, message: 'Invalid Password' });
 
-		const token = jwt.sign({ id: userFound }, secretWotds.LOGIN, {
+		const token = jwt.sign({ userFound }, secretWotds.LOGIN, {
 			expiresIn: 84600, // 24h
 		});
 

@@ -3,8 +3,17 @@ import cors from 'cors';
 import path from 'path';
 import { routerIncomes } from './src/routes/income.routes';
 import { routerUsers } from './src/routes/user.routes';
+import { createRoles, createUserAdmin } from './src/LIBS/inisicialSetup';
 
 const app = express();
+
+const initialState = async () => {
+	await createRoles();
+	await createUserAdmin();
+	return;
+};
+
+initialState();
 
 app.set('port', process.env.PORT || 4001);
 // app.set('pkg', pkg);

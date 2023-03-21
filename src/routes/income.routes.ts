@@ -10,13 +10,13 @@ const routerIncomes = Router();
 
 routerIncomes
 	.route('/')
-	.get(AuthMiddleware.requireAuth, IncomeController.getIncomes)
-	.post(IncomeController.createIncome);
-// .post([Token.verifyToken, Token.isModerator], IncomeController.createIncome);
+	.get(IncomeController.getIncomes)
+	.post(AuthMiddleware.requireAuthModerator, IncomeController.createIncome);
 
-routerIncomes.route('/:id').get(AuthMiddleware.requireAuth, IncomeController.getIncome);
-// .get([AuthMiddleware.requireAuth, Token.isModerator], IncomeController.getIncome)
-// .delete([AuthMiddleware.requireAuth, Token.isAdmin], IncomeController.deleteIncome)
-// .put([AuthMiddleware.requireAuth, Token.isModerator], IncomeController.updateIncome);
+routerIncomes
+	.route('/:id')
+	.get(AuthMiddleware.requireAuthAdmin, IncomeController.getIncome)
+	.delete(AuthMiddleware.requireAuthAdmin, IncomeController.deleteIncome)
+	.put(AuthMiddleware.requireAuthAdmin, IncomeController.updateIncome);
 
 export { routerIncomes };

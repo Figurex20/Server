@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs';
 @modelOptions({
 	schemaOptions: {
 		timestamps: true,
-		_id: false,
 	},
 })
 class User {
@@ -13,25 +12,25 @@ class User {
 	userName: String;
 
 	@prop({ required: true, trim: true, unique: true })
-	email: String;
+	email: string;
 
 	@prop({ required: true, trim: true })
-	password: String;
+	password: string;
 
-	@prop({ required: true, trim: true })
-	recoverpassword: String;
+	@prop({ trim: true })
+	recoverpassword: string;
 
 	@prop()
 	resetPassword: boolean;
 
 	@prop({ type: String, required: true })
-	role: String;
+	role: string;
 
 	@prop({ type: String, required: true })
-	name: String;
+	name: string;
 
 	@prop({ type: String, required: true })
-	lastname: String;
+	lastname: string;
 
 	@prop({ ref: () => Role })
 	roles: Ref<Role>[];

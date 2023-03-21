@@ -1,11 +1,7 @@
 import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
-@modelOptions({
-	schemaOptions: {
-		_id: false,
-	},
-})
+
 export class Role {
-	@prop()
+	@prop({ type: String })
 	name: String;
 }
 

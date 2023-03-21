@@ -6,6 +6,6 @@ import { AuthController } from '../controllers/auth.controllers';
 const routerUsers = Router();
 
 routerUsers.post('/signup', AuthController.signUp);
-// routerUsers.post('/signin', AuthController.signNin);
+routerUsers.post('/signin', AuthController.signNin);
 
 export { routerUsers };
