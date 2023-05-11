@@ -3,6 +3,7 @@ import { secretWotds } from '../config';
 import { userModel } from '../models/modelUser';
 import { roleModel } from '../models/modelRole';
 import { Response, Request } from 'express';
+import { serialize } from 'cookie';
 
 export class AuthController {
 	static signUp = async (req: Request, res: Response) => {
@@ -65,7 +66,7 @@ export class AuthController {
 	};
 
 	static signNin = async (req: Request, res: Response) => {
-		const userFound = await userModel.findOne({ userName: req.body.user }).populate('roles');
+		const userFound = await userModel.findOne({ userName: req.body.userName }).populate('roles');
 
 		if (!userFound) return res.status(404).json({ message: 'User no found' });
 
@@ -78,9 +79,17 @@ export class AuthController {
 		const token = jwt.sign({ userFound }, secretWotds.LOGIN, {
 			expiresIn: 84600, // 24h
 		});
+		const serealized = serialize("userLogin", token, {
+			httpOnly: true,
+			sameSite: "none",
+			secure:true,
+			maxAge: 365
+		})
+		res.set("login", serealized )
+		// res.cookie("login", serealized )
 
 		res.json({
-			token,
+			// token,
 			user: userFound,
 			// role: userFound.role,
 			// user: userFound.userName,

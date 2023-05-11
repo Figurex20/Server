@@ -6,7 +6,8 @@ import { userModel } from '../models/modelUser';
 
 export class AuthMiddleware {
 	static requireAuthModerator = async (req: Request, res: Response, next: NextFunction) => {
-		const authHeader: String | undefined = req.headers.authorization;
+		// const authHeader: String | undefined = req.headers.authorization;
+		const authHeader: String | undefined = req.cookies;
 
 		if (!authHeader) return res.status(401).json({ message: 'Unauthorized' });
 

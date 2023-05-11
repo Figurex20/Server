@@ -117,6 +117,7 @@ export class IncomeController {
 
 	static createIncome = async (req: Request, res: Response) => {
 		try {
+			
 			const { name, site, whatdo, rda, exit, nameEnter, nameExit, dateEnter, comments } = req.body;
 
 			if (rda.length != 7) {
@@ -138,7 +139,7 @@ export class IncomeController {
 			return res.status(201).json({ status: 'Income saved' });
 		} catch (error) {
 			let result = (error as DOMException).message;
-			return res.status(404).json({ message: result });
+			return res.status(404).json({ message: "somting wrong in createIcome" });
 		}
 	};
 

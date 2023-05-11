@@ -11,7 +11,8 @@ const routerIncomes = Router();
 routerIncomes
 	.route('/')
 	.get(IncomeController.getIncomes)
-	.post(AuthMiddleware.requireAuthModerator, IncomeController.createIncome);
+	// .post(AuthMiddleware.requireAuthModerator, IncomeController.createIncome);
+	.post(IncomeController.createIncome);
 
 routerIncomes
 	.route('/:id')
