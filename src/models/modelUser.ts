@@ -1,6 +1,7 @@
 import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose';
 import { Role } from './modelRole';
 import bcrypt from 'bcryptjs';
+import { models } from 'mongoose';
 
 @modelOptions({
 	schemaOptions: {
@@ -45,6 +46,7 @@ class User {
 	}
 }
 
+// const userModel = models.User || getModelForClass(User);
 const userModel = getModelForClass(User);
 
 export { userModel };
